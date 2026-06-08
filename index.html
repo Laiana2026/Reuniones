@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asistencia</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background:#f5f5f5; color:#222; }
+    .box { max-width: 1300px; margin:auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+    .header { text-align:center; margin-bottom:15px; line-height:1.08; }
+    .header .main { font-size:36px; font-weight:900; text-transform:uppercase; }
+    .header .sub1 { font-size:18px; font-weight:400; text-transform:uppercase; }
+    .header .sub2 { font-size:18px; font-weight:400; text-transform:uppercase; }
+
+    .print-info {
+      display: none;
+      margin: 15px 0 20px;
+      font-size: 14px;
+    }
+    .print-info .row {
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      border: 1px solid #222;
+      padding: 10px;
+    }
+    .print-info strong { font-weight: 700; }
+
+    .grid-top, .grid-form { display:grid; gap:12px; margin-bottom:12px; }
+    .grid-top { grid-template-columns: repeat(3, 1fr); }
+    .grid-form { grid-template-columns: 1.2fr 2fr 1.2fr 1.5fr 1fr; }
+    .field label { display:block; font-size:12px; font-weight:700; margin-bottom:4px; }
+    .field input { width:100%; padding:9px; border:1px solid #bbb; border-radius:6px; box-sizing:border-box; }
+
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin:15px 0; }
+    button { padding:10px 14px; border:0; border-radius:6px; cursor:pointer; background:#1f4e79; color:#fff; font-weight:700; }
+    button.secondary { background:#666; }
+    button.success { background:#1b7f3a; }
+
+    .signature-wrap { margin-top:10px; }
+    canvas { width:100%; max-width:420px; height:150px; border:1px solid #222; border-radius:6px; background:#fff; touch-action:none; display:block; }
+
+    table { width:100%; border-collapse:collapse; margin-top:20px; table-layout:fixed; }
+    th, td { border:1px solid #222; padding:6px; font-size:12px; text-align:center; vertical-align:middle; }
+    th { background:#eee; }
+    img.sig { max-width:120px; max-height:50px; }
+
+    @media print {
+      body { background:#fff; margin:0; }
+      .box { box-shadow:none; border-radius:0; padding:0; }
+      .no-print { display:none; }
+      .print-info { display:block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="header">
+      <div class="main">POLICÍA NACIONAL DEL ECUADOR</div>
+      <div class="sub1">DIRECCIÓN GENERAL DE INVESTIGACIONES</div>
+      <div class="sub2">DEPARTAMENTO DE ANÁLISIS DE LA INFORMACIÓN - C4I2</div>
+    </div>
+
+    <div class="print-info">
+      <div class="row">
+        <div><strong>FECHA:</strong> <span id="pFecha"></span></div>
+        <div><strong>TEMA:</strong> <span id="pTema"></span></div>
+        <div><strong>PRESIDE:</strong> <span id="pPreside"></span></div>
+      </div>
+    </div>
+
+    <div class="grid-top no-print">
+      <div class="field"><label>FECHA</label><input type="date" id="fecha"></div>
+      <div class="field"><label>TEMA</label><input type="text" id="tema"></div>
+      <div class="field"><label>PRESIDE</label><input type="text" id="preside"></div>
+    </div>
+
+    <h3 class="no-print" style="margin:18px 0 10px;">Formulario de asistente</h3>
+    <div class="grid-form no-print">
+      <div class="field"><label>UNIDAD O DEPENDENCIA</label><input type="text" id="unidad"></div>
+      <div class="field"><label>NOMBRE-APELLIDO</label><input type="text" id="nombre"></div>
+      <div class="field"><label>GRADO Y/O CARGO</label><input type="text" id="cargo"></div>
+      <div class="field"><label>E-MAIL</label><input type="email" id="email"></div>
+      <div class="field"><label>TELÉFONO</label><input type="tel" id="telefono"></div>
+    </div>
+
+    <div class="no-print signature-wrap">
+      <div class="field" style="max-width:420px;">
+        <label>FIRMA TÁCTIL</label>
+        <canvas id="signaturePad" width="420" height="150"></canvas>
+      </div>
+      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button type="button" class="secondary" onclick="limpiarFirma()">Limpiar firma</button>
+        <button type="button" onclick="agregarAsistente()">Agregar asistente</button>
+        <button type="button" class="success" onclick="prepararImpresion()">Imprimir / PDF</button>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:40px;">N°</th>
+          <th style="width:170px;">UNIDAD O DEPENDENCIA</th>
+          <th>NOMBRE-APELLIDO</th>
+          <th style="width:140px;">GRADO Y/O CARGO</th>
+          <th style="width:190px;">E-MAIL</th>
+          <th style="width:120px;">TELÉFONO</th>
+          <th style="width:120px;">FIRMA</th>
+        </tr>
+      </thead>
+      <tbody id="tabla"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const fecha = document.getElementById('fecha');
+    const hoy = new Date();
+    fecha.value = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+
+    function formatFechaES(date) {
+      const f = new Intl.DateTimeFormat('es-EC', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }).format(date);
+      return f.charAt(0).toUpperCase() + f.slice(1);
+    }
+
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+    }
+
+    function startDraw(e) {
+      drawing = true;
+      const p = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      e.preventDefault();
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      const p = getPos(e);
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#000';
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      e.preventDefault();
+    }
+
+    function stopDraw() {
+      drawing = false;
+    }
+
+    function limpiarFirma() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mouseleave', stopDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive:false });
+    canvas.addEventListener('touchmove', draw, { passive:false });
+    canvas.addEventListener('touchend', stopDraw);
+
+    const asistentes = [];
+
+    function agregarAsistente() {
+      const unidad = document.getElementById('unidad').value.trim();
+      const nombre = document.getElementById('nombre').value.trim();
+      const cargo = document.getElementById('cargo').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const telefono = document.getElementById('telefono').value.trim();
+      const firma = canvas.toDataURL('image/png');
+
+      if (!nombre) {
+        alert('Ingresa al menos el nombre del asistente.');
+        return;
+      }
+
+      asistentes.push({ unidad, nombre, cargo, email, telefono, firma });
+      renderTabla();
+      limpiarCampos();
+      limpiarFirma();
+    }
+
+    function renderTabla() {
+      const tbody = document.getElementById('tabla');
+      tbody.innerHTML = '';
+
+      asistentes.forEach((a, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${a.unidad}</td>
+            <td>${a.nombre}</td>
+            <td>${a.cargo}</td>
+            <td>${a.email}</td>
+            <td>${a.telefono}</td>
+            <td>${a.firma ? '<img class="sig" src="'+a.firma+'">' : ''}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function limpiarCampos() {
+      ['unidad','nombre','cargo','email','telefono'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('nombre').focus();
+    }
+
+    function prepararImpresion() {
+      const d = new Date(fecha.value + 'T00:00:00');
+      document.getElementById('pFecha').textContent = formatFechaES(d);
+      document.getElementById('pTema').textContent = document.getElementById('tema').value;
+      document.getElementById('pPreside').textContent = document.getElementById('preside').value;
+      window.print();
+    }
+  </script>
+</body>
+</html>
