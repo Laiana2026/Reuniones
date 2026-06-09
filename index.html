@@ -9,15 +9,18 @@
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       margin: 0;
-      padding: 12px;
+      padding: 0;
       background: #f0f2f5;
       color: #222;
       -webkit-text-size-adjust: 100%;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
     }
     .box {
       width: 100%;
       max-width: 1400px;
-      margin: auto;
+      margin: 12px;
       background: #fff;
       padding: 14px;
       border-radius: 12px;
@@ -32,23 +35,21 @@
       margin-bottom: 20px;
       border-bottom: 3px solid #1f4e79;
       padding-bottom: 15px;
+      flex-wrap: wrap;
     }
     .seal {
       width: 54px;
       height: 54px;
       object-fit: contain;
       flex: 0 0 auto;
-      /* Separación extrema de los bordes laterales */
-      margin-left: 40px;
-      margin-right: 40px;
     }
-    /* Primer sello (izquierdo): mucho margen izquierdo */
     .seal:first-child {
       margin-left: 60px;
+      margin-right: 20px;
     }
-    /* Segundo sello (derecho): mucho margen derecho */
     .seal:last-child {
       margin-right: 60px;
+      margin-left: 20px;
     }
     .header {
       text-align: center;
@@ -79,7 +80,7 @@
       display: flex;
       gap: 14px;
       flex-wrap: wrap;
-      justify-content: space-between;
+      justify-content: center;
       border: 1px solid #222;
       padding: 10px;
       background: #f9f9f9;
@@ -106,6 +107,7 @@
       border-radius: 8px;
       font-size: 16px;
       transition: border-color 0.3s;
+      font-family: 'Segoe UI', Arial, sans-serif;
     }
     .field input:focus {
       outline: none;
@@ -124,13 +126,28 @@
     canvas {
       width: 100%;
       max-width: 100%;
-      height: 180px;
-      border: 2px solid #1f4e79;
+      height: 250px;
+      border: 3px solid #1f4e79;
       border-radius: 8px;
       background: #fff;
       touch-action: none;
       display: block;
       cursor: crosshair;
+      background-color: #fefefe;
+    }
+    .canvas-container {
+      position: relative;
+    }
+    .canvas-hint {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 11px;
+      color: #999;
+      background: rgba(255,255,255,0.8);
+      padding: 2px 8px;
+      border-radius: 12px;
+      pointer-events: none;
     }
 
     .actions {
@@ -151,6 +168,7 @@
       font-size: 16px;
       min-height: 48px;
       transition: transform 0.2s, opacity 0.2s;
+      font-family: 'Segoe UI', Arial, sans-serif;
     }
     button:hover { opacity: 0.9; transform: translateY(-1px); }
     button.secondary { background: #6c757d; }
@@ -158,31 +176,55 @@
     button.danger { background: #dc3545; }
     button.warning { background: #ffc107; color: #000; }
 
+    /* --- TABLA QUE OCUPA TODO EL ANCHO CON COLUMNAS PROPORCIONALES --- */
     .table-wrap {
       overflow-x: auto;
       margin-top: 20px;
       border-radius: 8px;
       border: 1px solid #ddd;
+      background: #fff;
     }
     table {
       width: 100%;
-      min-width: 920px;
       border-collapse: collapse;
+      table-layout: fixed;
     }
     th, td {
       border: 1px solid #ddd;
-      padding: 10px 8px;
+      padding: 10px 12px;
       font-size: 13px;
-      text-align: center;
+      text-align: left;
       vertical-align: middle;
       word-break: break-word;
+      overflow-wrap: break-word;
+      font-family: 'Segoe UI', Arial, sans-serif;
     }
-    th { 
+    th {
+      text-align: center;
       background: #1f4e79;
       color: white;
       font-weight: 600;
     }
-    img.sig { max-width: 100px; max-height: 40px; }
+    th:nth-child(1), td:nth-child(1) { width: 5%; text-align: center; }
+    th:nth-child(2), td:nth-child(2) { width: 12%; }
+    th:nth-child(3), td:nth-child(3) { width: 25%; }
+    th:nth-child(4), td:nth-child(4) { width: 12%; }
+    th:nth-child(5), td:nth-child(5) { width: 20%; }
+    th:nth-child(6), td:nth-child(6) { width: 12%; }
+    th:nth-child(7), td:nth-child(7) { width: 14%; text-align: center; }
+    
+    td:nth-child(1), td:nth-child(7) {
+      text-align: center;
+    }
+    
+    img.sig { 
+      max-width: 140px; 
+      max-height: 60px;
+      min-width: 100px;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+    }
     .empty-row td {
       text-align: center;
       padding: 40px;
@@ -190,15 +232,16 @@
     }
 
     @media (min-width: 768px) {
-      body { padding: 20px; }
-      .box { padding: 25px; }
-      .seal { width: 80px; height: 80px; }
-      /* En desktop separamos aún muchísimo más los sellos de los extremos */
+      body { padding: 0; }
+      .box { margin: 20px auto; padding: 25px; }
+      .seal { width: 90px; height: 90px; }
       .seal:first-child {
-        margin-left: 100px;
+        margin-left: 120px;
+        margin-right: 30px;
       }
       .seal:last-child {
-        margin-right: 100px;
+        margin-right: 120px;
+        margin-left: 30px;
       }
       .header .main { font-size: 32px; }
       .header .sub1, .header .sub2 { font-size: 16px; }
@@ -207,10 +250,16 @@
       .actions {
         grid-template-columns: repeat(3, 1fr);
       }
+      canvas {
+        height: 280px;
+      }
+      img.sig {
+        max-width: 160px;
+        max-height: 70px;
+      }
     }
 
     @media print {
-      /* Eliminar márgenes por defecto del navegador */
       @page {
         margin: 1.5cm;
       }
@@ -218,41 +267,60 @@
       body { 
         background: #fff; 
         margin: 0; 
-        padding: 0; 
+        padding: 0;
       }
       
-      /* OCULTAR la fecha/hora que algunos navegadores añaden en headers/footers */
-      /* Esto se logra con @page y configurando márgenes, pero también forzamos a ocultar posibles elementos generados */
-      
-      /* Forzar que no aparezca el título de la pestaña ni URL */
       .box { 
         box-shadow: none; 
         border-radius: 0; 
-        padding: 0; 
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
       }
       .no-print { display: none; }
       .print-info { display: block; }
-      .table-wrap { overflow: visible; }
-      table { min-width: 0; width: 100%; }
-      th { background: #eee; color: #000; }
+      .table-wrap { 
+        overflow: visible;
+      }
+      table { 
+        width: 100%;
+        table-layout: fixed;
+      }
+      th, td {
+        padding: 8px 10px;
+      }
+      th { 
+        background: #eee; 
+        color: #000;
+        text-align: center;
+      }
+      img.sig {
+        max-width: 130px;
+        max-height: 55px;
+        border: none;
+        background: transparent;
+      }
       
-      /* En impresión también separamos sellos extremadamente de los bordes */
+      .header-wrap {
+        justify-content: space-between;
+      }
+      
       .seal:first-child {
-        margin-left: 80px;
+        margin-left: 40px;
       }
       .seal:last-child {
-        margin-right: 80px;
+        margin-right: 40px;
       }
       
-      /* Ocultar cualquier posible contenido generado por el navegador como URL, fecha, etc. */
-      /* Esto es un intento adicional para navegadores como Chrome */
+      .print-info .row {
+        justify-content: center;
+      }
+      
       html, body {
         margin: 0 !important;
         padding: 0 !important;
       }
       
-      /* Evitar que aparezca información del sistema operativo/navegador en el encabezado/pie de impresión */
-      /* Algunos navegadores añaden la URL al pie, esto ayuda a minimizar espacio */
       @page {
         margin-top: 1.2cm;
         margin-bottom: 1.2cm;
@@ -294,24 +362,27 @@
     </div>
 
     <div class="grid-top no-print">
-      <div class="field"><label>📅 FECHA</label><input type="date" id="fecha"></div>
-      <div class="field"><label>📝 TEMA</label><input type="text" id="tema" placeholder="Ej: Reunión de Coordinación"></div>
-      <div class="field"><label>👤 PRESIDE</label><input type="text" id="preside" placeholder="Nombre de quien preside"></div>
+      <div class="field"><label>📅 FECHA</label><input type="date" id="fecha" autocomplete="off"></div>
+      <div class="field"><label>📝 TEMA</label><input type="text" id="tema" placeholder="Ej: Reunión de Coordinación" autocomplete="off"></div>
+      <div class="field"><label>👤 PRESIDE</label><input type="text" id="preside" placeholder="Nombre de quien preside" autocomplete="off"></div>
     </div>
 
     <h3 class="no-print">✍️ Formulario de asistente</h3>
     <div class="grid-form no-print">
-      <div class="field"><label>🏢 UNIDAD O DEPENDENCIA</label><input type="text" id="unidad" placeholder="Ej: C4I2"></div>
-      <div class="field"><label>👤 NOMBRE-APELLIDO</label><input type="text" id="nombre" placeholder="* Obligatorio"></div>
-      <div class="field"><label>⭐ GRADO Y/O CARGO</label><input type="text" id="cargo" placeholder="Ej: Capitán"></div>
-      <div class="field"><label>📧 E-MAIL</label><input type="email" id="email" placeholder="ejemplo@policia.gob.ec"></div>
-      <div class="field"><label>📱 TELÉFONO</label><input type="tel" id="telefono" placeholder="0999999999"></div>
+      <div class="field"><label>🏢 UNIDAD</label><input type="text" id="unidad" placeholder="Ej: C4I2" autocomplete="off"></div>
+      <div class="field"><label>👤 APELLIDOS Y NOMBRES</label><input type="text" id="nombre" placeholder="* Obligatorio" autocomplete="off"></div>
+      <div class="field"><label>⭐ GRADO Y/O CARGO</label><input type="text" id="cargo" placeholder="Ej: Capitán" autocomplete="off"></div>
+      <div class="field"><label>📧 E-MAIL</label><input type="email" id="email" placeholder="ejemplo@policia.gob.ec" autocomplete="off"></div>
+      <div class="field"><label>📱 TELÉFONO</label><input type="tel" id="telefono" placeholder="0999999999" autocomplete="off"></div>
     </div>
 
     <div class="no-print signature-wrap">
       <div class="field">
         <label>🖊️ FIRMA TÁCTIL (Dibuje aquí)</label>
-        <canvas id="signaturePad" width="420" height="180"></canvas>
+        <div class="canvas-container">
+          <canvas id="signaturePad" width="600" height="250"></canvas>
+          <div class="canvas-hint">✍️ Dibuje con el mouse o dedo</div>
+        </div>
       </div>
       <div class="actions">
         <button type="button" class="secondary" onclick="limpiarFirma()">🗑️ Limpiar firma</button>
@@ -324,13 +395,13 @@
       <table id="tablaAsistentes">
         <thead>
           <tr>
-            <th style="width:40px;">N°</th>
-            <th style="width:180px;">UNIDAD O DEPENDENCIA</th>
-            <th style="width:200px;">NOMBRE-APELLIDO</th>
-            <th style="width:150px;">GRADO Y/O CARGO</th>
-            <th style="width:200px;">E-MAIL</th>
-            <th style="width:130px;">TELÉFONO</th>
-            <th style="width:150px;">FIRMA</th>
+            <th>N°</th>
+            <th>UNIDAD</th>
+            <th>APELLIDOS Y NOMBRES</th>
+            <th>GRADO Y/O CARGO</th>
+            <th>E-MAIL</th>
+            <th>TELÉFONO</th>
+            <th>FIRMA</th>
           </tr>
         </thead>
         <tbody id="tabla"></tbody>
@@ -341,7 +412,6 @@
   <script>
     // --- Variables globales ---
     let asistentes = [];
-    let editingIndex = null;
     let currentSignatureData = null;
 
     // --- Elementos DOM ---
@@ -350,12 +420,13 @@
     const ctx = canvas.getContext('2d');
     let drawing = false;
 
-    // --- Configuración inicial de fecha ---
-    const hoy = new Date();
-    fechaInput.value = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+    // --- Configuración inicial de fecha (vacío por defecto) ---
+    // NO se establece ninguna fecha por defecto
+    fechaInput.value = '';
 
     // --- Formateo de fecha en español ---
     function formatFechaES(date) {
+      if (isNaN(date.getTime())) return 'No especificada';
       const f = new Intl.DateTimeFormat('es-EC', {
         weekday: 'long',
         day: 'numeric',
@@ -366,28 +437,25 @@
     }
 
     // --- Funciones de la firma táctil ---
-    function resizeCanvasForDPR() {
-      const rect = canvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.round(rect.width * dpr);
-      canvas.height = Math.round(rect.height * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.lineWidth = 2;
+    function initCanvas() {
+      canvas.width = 600;
+      canvas.height = 250;
+      ctx.lineWidth = 3;
       ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       ctx.strokeStyle = '#000';
-      if (currentSignatureData) {
-        const img = new Image();
-        img.onload = () => ctx.drawImage(img, 0, 0);
-        img.src = currentSignatureData;
-      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      currentSignatureData = null;
     }
 
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
       const t = e.touches ? e.touches[0] : e;
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
       return { 
-        x: (t.clientX - rect.left) * (canvas.width / rect.width),
-        y: (t.clientY - rect.top) * (canvas.height / rect.height)
+        x: (t.clientX - rect.left) * scaleX,
+        y: (t.clientY - rect.top) * scaleY
       };
     }
 
@@ -415,20 +483,17 @@
     function limpiarFirma() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       currentSignatureData = null;
-      if (editingIndex !== null) {
-        asistentes[editingIndex].firma = '';
-      }
     }
 
     canvas.addEventListener('mousedown', startDraw);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDraw);
     canvas.addEventListener('mouseleave', stopDraw);
-    canvas.addEventListener('touchstart', startDraw, { passive:false });
-    canvas.addEventListener('touchmove', draw, { passive:false });
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
     canvas.addEventListener('touchend', stopDraw);
-    window.addEventListener('resize', resizeCanvasForDPR);
-    resizeCanvasForDPR();
+    
+    initCanvas();
 
     // --- Validaciones ---
     function validarEmail(email) {
@@ -453,15 +518,27 @@
     }
 
     // --- LIMPIAR localStorage al iniciar para que empiece en BLANCO ---
-    // Eliminamos cualquier registro previo que pudiera existir
     localStorage.removeItem('asistenciaPolicia');
     
     // --- Inicializar completamente vacío ---
     asistentes = [];
-    editingIndex = null;
     currentSignatureData = null;
 
-    // --- Renderizar tabla vacía ---
+    // --- Limpiar todos los campos del formulario ---
+    function limpiarTodosLosCampos() {
+      ['unidad', 'nombre', 'cargo', 'email', 'telefono'].forEach(id => {
+        const campo = document.getElementById(id);
+        if (campo) campo.value = '';
+      });
+      // Limpiar fecha, tema y preside
+      if (fechaInput) fechaInput.value = '';
+      const temaInput = document.getElementById('tema');
+      const presideInput = document.getElementById('preside');
+      if (temaInput) temaInput.value = '';
+      if (presideInput) presideInput.value = '';
+    }
+
+    // --- Renderizar tabla ---
     function renderTabla() {
       const tbody = document.getElementById('tabla');
       if (asistentes.length === 0) {
@@ -497,11 +574,11 @@
       });
     }
 
-    function limpiarCampos() {
-      ['unidad','nombre','cargo','email','telefono'].forEach(id => {
-        document.getElementById(id).value = '';
+    function limpiarCamposFormulario() {
+      ['unidad', 'nombre', 'cargo', 'email', 'telefono'].forEach(id => {
+        const campo = document.getElementById(id);
+        if (campo) campo.value = '';
       });
-      editingIndex = null;
       document.getElementById('nombre').focus();
     }
 
@@ -512,87 +589,40 @@
       const email = document.getElementById('email').value.trim();
       const telefono = document.getElementById('telefono').value.trim();
       
-      let firma = currentSignatureData || '';
-      
-      if (editingIndex !== null && !firma && asistentes[editingIndex]) {
-        firma = asistentes[editingIndex].firma;
-      }
+      const firma = currentSignatureData || '';
 
       if (!nombre) {
         alert('❌ El campo NOMBRE-APELLIDO es obligatorio.');
         return;
       }
 
-      if (!validarEmail(email)) {
+      if (email !== '' && !validarEmail(email)) {
         alert('❌ El correo electrónico no es válido.');
         return;
       }
 
-      if (!validarTelefono(telefono)) {
+      if (telefono !== '' && !validarTelefono(telefono)) {
         alert('❌ El teléfono debe tener 9 o 10 dígitos numéricos.');
         return;
       }
 
       const asistente = { unidad, nombre, cargo, email, telefono, firma };
-
-      if (editingIndex !== null) {
-        asistentes[editingIndex] = asistente;
-        editingIndex = null;
-        alert('✅ Asistente actualizado correctamente');
-      } else {
-        asistentes.push(asistente);
-        alert('✅ Asistente agregado correctamente');
-      }
+      asistentes.push(asistente);
+      alert('✅ Asistente agregado correctamente');
 
       renderTabla();
-      limpiarCampos();
+      limpiarCamposFormulario();
       limpiarFirma();
       guardarEnLocalStorage();
     }
 
-    // --- Editar asistente ---
-    function editarAsistente(index) {
-      const a = asistentes[index];
-      document.getElementById('unidad').value = a.unidad;
-      document.getElementById('nombre').value = a.nombre;
-      document.getElementById('cargo').value = a.cargo;
-      document.getElementById('email').value = a.email;
-      document.getElementById('telefono').value = a.telefono;
-      
-      if (a.firma) {
-        currentSignatureData = a.firma;
-        const img = new Image();
-        img.onload = () => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
-        img.src = a.firma;
-      } else {
-        limpiarFirma();
-      }
-      
-      editingIndex = index;
-      document.getElementById('nombre').focus();
-      guardarEnLocalStorage();
-    }
-
-    // --- Eliminar asistente ---
-    function eliminarAsistente(index) {
-      if (confirm('¿Está seguro de eliminar a ' + asistentes[index].nombre + '?')) {
-        asistentes.splice(index, 1);
-        renderTabla();
-        guardarEnLocalStorage();
-        if (editingIndex === index) {
-          limpiarCampos();
-          limpiarFirma();
-          editingIndex = null;
-        }
-        alert('🗑️ Asistente eliminado');
-      }
-    }
-
     function prepararImpresion() {
-      const fechaSeleccionada = new Date(fechaInput.value + 'T00:00:00');
+      let fechaSeleccionada;
+      if (fechaInput.value) {
+        fechaSeleccionada = new Date(fechaInput.value + 'T00:00:00');
+      } else {
+        fechaSeleccionada = new Date();
+      }
       document.getElementById('pFecha').textContent = formatFechaES(fechaSeleccionada);
       document.getElementById('pTema').textContent = document.getElementById('tema').value || 'No especificado';
       document.getElementById('pPreside').textContent = document.getElementById('preside').value || 'No especificado';
@@ -600,8 +630,8 @@
       
       let hayErrores = false;
       asistentes.forEach(a => {
-        if (!validarEmail(a.email) && a.email) hayErrores = true;
-        if (!validarTelefono(a.telefono) && a.telefono) hayErrores = true;
+        if (a.email !== '' && !validarEmail(a.email)) hayErrores = true;
+        if (a.telefono !== '' && !validarTelefono(a.telefono)) hayErrores = true;
       });
       
       if (hayErrores) {
@@ -619,13 +649,11 @@
       }
     });
 
-    // Inicializar: tabla vacía, campos vacíos, firma vacía
+    // Inicializar TODO vacío
+    limpiarTodosLosCampos();
     renderTabla();
-    limpiarCampos();
-    limpiarFirma();
-    
-    // Aseguramos que no haya ningún dato residual en el localStorage al cargar la página
-    // (ya se eliminó arriba con removeItem)
+    limpiarCamposFormulario();
+    initCanvas();
   </script>
 </body>
 </html>
