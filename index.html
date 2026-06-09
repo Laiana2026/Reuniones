@@ -38,6 +38,17 @@
       height: 54px;
       object-fit: contain;
       flex: 0 0 auto;
+      /* Separación extrema de los bordes laterales */
+      margin-left: 40px;
+      margin-right: 40px;
+    }
+    /* Primer sello (izquierdo): mucho margen izquierdo */
+    .seal:first-child {
+      margin-left: 60px;
+    }
+    /* Segundo sello (derecho): mucho margen derecho */
+    .seal:last-child {
+      margin-right: 60px;
     }
     .header {
       text-align: center;
@@ -182,6 +193,13 @@
       body { padding: 20px; }
       .box { padding: 25px; }
       .seal { width: 80px; height: 80px; }
+      /* En desktop separamos aún muchísimo más los sellos de los extremos */
+      .seal:first-child {
+        margin-left: 100px;
+      }
+      .seal:last-child {
+        margin-right: 100px;
+      }
       .header .main { font-size: 32px; }
       .header .sub1, .header .sub2 { font-size: 16px; }
       .grid-top { grid-template-columns: repeat(3, 1fr); }
@@ -192,13 +210,55 @@
     }
 
     @media print {
-      body { background: #fff; margin: 0; padding: 0; }
-      .box { box-shadow: none; border-radius: 0; padding: 0; }
+      /* Eliminar márgenes por defecto del navegador */
+      @page {
+        margin: 1.5cm;
+      }
+      
+      body { 
+        background: #fff; 
+        margin: 0; 
+        padding: 0; 
+      }
+      
+      /* OCULTAR la fecha/hora que algunos navegadores añaden en headers/footers */
+      /* Esto se logra con @page y configurando márgenes, pero también forzamos a ocultar posibles elementos generados */
+      
+      /* Forzar que no aparezca el título de la pestaña ni URL */
+      .box { 
+        box-shadow: none; 
+        border-radius: 0; 
+        padding: 0; 
+      }
       .no-print { display: none; }
       .print-info { display: block; }
       .table-wrap { overflow: visible; }
       table { min-width: 0; width: 100%; }
       th { background: #eee; color: #000; }
+      
+      /* En impresión también separamos sellos extremadamente de los bordes */
+      .seal:first-child {
+        margin-left: 80px;
+      }
+      .seal:last-child {
+        margin-right: 80px;
+      }
+      
+      /* Ocultar cualquier posible contenido generado por el navegador como URL, fecha, etc. */
+      /* Esto es un intento adicional para navegadores como Chrome */
+      html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      /* Evitar que aparezca información del sistema operativo/navegador en el encabezado/pie de impresión */
+      /* Algunos navegadores añaden la URL al pie, esto ayuda a minimizar espacio */
+      @page {
+        margin-top: 1.2cm;
+        margin-bottom: 1.2cm;
+        margin-left: 1.5cm;
+        margin-right: 1.5cm;
+      }
     }
 
     .badge {
@@ -392,20 +452,59 @@
       localStorage.setItem('asistenciaPolicia', JSON.stringify(datos));
     }
 
-    // --- Cargar desde localStorage ---
-    function cargarDesdeLocalStorage() {
-      const guardado = localStorage.getItem('asistenciaPolicia');
-      if (guardado) {
-        const datos = JSON.parse(guardado);
-        asistentes = datos.asistentes || [];
-        fechaInput.value = datos.fecha || hoy.toISOString().split('T')[0];
-        document.getElementById('tema').value = datos.tema || '';
-        document.getElementById('preside').value = datos.preside || '';
-        renderTabla();
+    // --- LIMPIAR localStorage al iniciar para que empiece en BLANCO ---
+    // Eliminamos cualquier registro previo que pudiera existir
+    localStorage.removeItem('asistenciaPolicia');
+    
+    // --- Inicializar completamente vacío ---
+    asistentes = [];
+    editingIndex = null;
+    currentSignatureData = null;
+
+    // --- Renderizar tabla vacía ---
+    function renderTabla() {
+      const tbody = document.getElementById('tabla');
+      if (asistentes.length === 0) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">📋 No hay asistentes registrados. Complete el formulario y presione "Agregar asistente"</td></tr>';
+        return;
       }
+      
+      tbody.innerHTML = '';
+      asistentes.forEach((a, i) => {
+        const emailValid = validarEmail(a.email);
+        const telefonoValid = validarTelefono(a.telefono);
+        tbody.innerHTML += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${escapeHtml(a.unidad)}</td>
+            <td><strong>${escapeHtml(a.nombre)}</strong></td>
+            <td>${escapeHtml(a.cargo)}</td>
+            <td>${escapeHtml(a.email)} ${!emailValid && a.email ? '<span class="badge badge-danger">inválido</span>' : ''}</td>
+            <td>${escapeHtml(a.telefono)} ${!telefonoValid && a.telefono ? '<span class="badge badge-danger">inválido</span>' : ''}</td>
+            <td>${a.firma ? '<img class="sig" src="'+a.firma+'" alt="firma">' : '<span class="badge badge-danger">Sin firma</span>'}</td>
+          </tr>
+        `;
+      });
     }
 
-    // --- Agregar o actualizar asistente ---
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    function limpiarCampos() {
+      ['unidad','nombre','cargo','email','telefono'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      editingIndex = null;
+      document.getElementById('nombre').focus();
+    }
+
     function agregarAsistente() {
       const unidad = document.getElementById('unidad').value.trim();
       const nombre = document.getElementById('nombre').value.trim();
@@ -492,50 +591,6 @@
       }
     }
 
-    // --- Renderizar tabla sin columna de acciones ---
-    function renderTabla() {
-      const tbody = document.getElementById('tabla');
-      if (asistentes.length === 0) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">📋 No hay asistentes registrados. Complete el formulario y presione "Agregar asistente"</td></tr>';
-        return;
-      }
-      
-      tbody.innerHTML = '';
-      asistentes.forEach((a, i) => {
-        const emailValid = validarEmail(a.email);
-        const telefonoValid = validarTelefono(a.telefono);
-        tbody.innerHTML += `
-          <tr>
-            <td>${i + 1}</td>
-            <td>${escapeHtml(a.unidad)}</td>
-            <td><strong>${escapeHtml(a.nombre)}</strong></td>
-            <td>${escapeHtml(a.cargo)}</td>
-            <td>${escapeHtml(a.email)} ${!emailValid && a.email ? '<span class="badge badge-danger">inválido</span>' : ''}</td>
-            <td>${escapeHtml(a.telefono)} ${!telefonoValid && a.telefono ? '<span class="badge badge-danger">inválido</span>' : ''}</td>
-            <td>${a.firma ? '<img class="sig" src="'+a.firma+'" alt="firma">' : '<span class="badge badge-danger">Sin firma</span>'}</td>
-          </tr>
-        `;
-      });
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      });
-    }
-
-    function limpiarCampos() {
-      ['unidad','nombre','cargo','email','telefono'].forEach(id => {
-        document.getElementById(id).value = '';
-      });
-      editingIndex = null;
-      document.getElementById('nombre').focus();
-    }
-
     function prepararImpresion() {
       const fechaSeleccionada = new Date(fechaInput.value + 'T00:00:00');
       document.getElementById('pFecha').textContent = formatFechaES(fechaSeleccionada);
@@ -559,15 +614,18 @@
     }
 
     window.addEventListener('beforeunload', () => {
-      guardarEnLocalStorage();
+      if (asistentes.length > 0) {
+        guardarEnLocalStorage();
+      }
     });
 
-    cargarDesdeLocalStorage();
+    // Inicializar: tabla vacía, campos vacíos, firma vacía
     renderTabla();
+    limpiarCampos();
+    limpiarFirma();
     
-    if (editingIndex === null) {
-      limpiarFirma();
-    }
+    // Aseguramos que no haya ningún dato residual en el localStorage al cargar la página
+    // (ya se eliminó arriba con removeItem)
   </script>
 </body>
 </html>
