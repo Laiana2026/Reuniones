@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Asistencia</title>
+  <title>Sistema de Asistencia - Policía Nacional del Ecuador</title>
   <style>
     * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Arial, sans-serif;
       margin: 0;
       padding: 12px;
-      background: #f5f5f5;
+      background: #f0f2f5;
       color: #222;
       -webkit-text-size-adjust: 100%;
     }
     .box {
       width: 100%;
-      max-width: 1300px;
+      max-width: 1400px;
       margin: auto;
       background: #fff;
       padding: 14px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.1);
     }
 
     .header-wrap {
@@ -29,7 +29,9 @@
       align-items: center;
       justify-content: space-between;
       gap: 2px;
-      margin-bottom: 14px;
+      margin-bottom: 20px;
+      border-bottom: 3px solid #1f4e79;
+      padding-bottom: 15px;
     }
     .seal {
       width: 54px;
@@ -46,14 +48,15 @@
       padding: 0;
     }
     .header .main {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 900;
       text-transform: uppercase;
       margin: 0;
       padding: 0;
+      color: #1f4e79;
     }
     .header .sub1, .header .sub2 {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 400;
       text-transform: uppercase;
       margin: 0;
@@ -68,6 +71,7 @@
       justify-content: space-between;
       border: 1px solid #222;
       padding: 10px;
+      background: #f9f9f9;
     }
     .print-info strong { font-weight: 700; }
 
@@ -82,18 +86,27 @@
       font-size: 12px;
       font-weight: 700;
       margin-bottom: 5px;
+      color: #1f4e79;
     }
     .field input {
       width: 100%;
       padding: 12px;
-      border: 1px solid #bbb;
+      border: 2px solid #ddd;
       border-radius: 8px;
       font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    .field input:focus {
+      outline: none;
+      border-color: #1f4e79;
     }
 
     h3 {
-      margin: 18px 0 10px;
+      margin: 20px 0 10px;
       font-size: 18px;
+      color: #1f4e79;
+      border-left: 4px solid #1f4e79;
+      padding-left: 10px;
     }
 
     .signature-wrap { margin-top: 10px; }
@@ -101,11 +114,12 @@
       width: 100%;
       max-width: 100%;
       height: 180px;
-      border: 1px solid #222;
+      border: 2px solid #1f4e79;
       border-radius: 8px;
       background: #fff;
       touch-action: none;
       display: block;
+      cursor: crosshair;
     }
 
     .actions {
@@ -125,38 +139,51 @@
       font-weight: 700;
       font-size: 16px;
       min-height: 48px;
+      transition: transform 0.2s, opacity 0.2s;
     }
-    button.secondary { background: #666; }
-    button.success { background: #1b7f3a; }
+    button:hover { opacity: 0.9; transform: translateY(-1px); }
+    button.secondary { background: #6c757d; }
+    button.success { background: #28a745; }
+    button.danger { background: #dc3545; }
+    button.warning { background: #ffc107; color: #000; }
 
     .table-wrap {
       overflow-x: auto;
-      margin-top: 18px;
+      margin-top: 20px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
     }
     table {
       width: 100%;
-      min-width: 900px;
+      min-width: 920px;
       border-collapse: collapse;
-      table-layout: fixed;
     }
     th, td {
-      border: 1px solid #222;
-      padding: 6px;
-      font-size: 12px;
+      border: 1px solid #ddd;
+      padding: 10px 8px;
+      font-size: 13px;
       text-align: center;
       vertical-align: middle;
       word-break: break-word;
     }
-    th { background: #eee; }
-    img.sig { max-width: 120px; max-height: 50px; }
+    th { 
+      background: #1f4e79;
+      color: white;
+      font-weight: 600;
+    }
+    img.sig { max-width: 100px; max-height: 40px; }
+    .empty-row td {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
 
     @media (min-width: 768px) {
       body { padding: 20px; }
-      .box { padding: 20px; }
-      .header-wrap { gap: 4px; margin-bottom: 14px; }
-      .seal { width: 70px; height: 70px; }
-      .header .main { font-size: 36px; }
-      .header .sub1, .header .sub2 { font-size: 18px; }
+      .box { padding: 25px; }
+      .seal { width: 80px; height: 80px; }
+      .header .main { font-size: 32px; }
+      .header .sub1, .header .sub2 { font-size: 16px; }
       .grid-top { grid-template-columns: repeat(3, 1fr); }
       .grid-form { grid-template-columns: 1.2fr 2fr 1.2fr 1.5fr 1fr; }
       .actions {
@@ -171,19 +198,30 @@
       .print-info { display: block; }
       .table-wrap { overflow: visible; }
       table { min-width: 0; width: 100%; }
+      th { background: #eee; color: #000; }
     }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .badge-success { background: #d4edda; color: #155724; }
+    .badge-danger { background: #f8d7da; color: #721c24; }
   </style>
 </head>
 <body>
   <div class="box">
     <div class="header-wrap">
-      <img class="seal" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/POLICIA_ECUADOR.svg/1920px-POLICIA_ECUADOR.svg.png" alt="Sello izquierdo">
+      <img class="seal" src="https://raw.githubusercontent.com/Laiana2026/Reuniones/refs/heads/main/DIGIN.png" alt="Sello izquierdo">
       <div class="header">
         <div class="main">POLICÍA NACIONAL DEL ECUADOR</div>
         <div class="sub1">DIRECCIÓN GENERAL DE INVESTIGACIONES</div>
         <div class="sub2">DEPARTAMENTO DE ANÁLISIS DE LA INFORMACIÓN - C4I2</div>
       </div>
-      <img class="seal" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/POLICIA_ECUADOR.svg/1920px-POLICIA_ECUADOR.svg.png" alt="Sello derecho">
+      <img class="seal" src="https://raw.githubusercontent.com/Laiana2026/Reuniones/refs/heads/main/C4I2.png" alt="Sello derecho">
     </div>
 
     <div class="print-info">
@@ -191,47 +229,48 @@
         <div><strong>FECHA:</strong> <span id="pFecha"></span></div>
         <div><strong>TEMA:</strong> <span id="pTema"></span></div>
         <div><strong>PRESIDE:</strong> <span id="pPreside"></span></div>
+        <div><strong>TOTAL ASISTENTES:</strong> <span id="pTotal"></span></div>
       </div>
     </div>
 
     <div class="grid-top no-print">
-      <div class="field"><label>FECHA</label><input type="date" id="fecha"></div>
-      <div class="field"><label>TEMA</label><input type="text" id="tema"></div>
-      <div class="field"><label>PRESIDE</label><input type="text" id="preside"></div>
+      <div class="field"><label>📅 FECHA</label><input type="date" id="fecha"></div>
+      <div class="field"><label>📝 TEMA</label><input type="text" id="tema" placeholder="Ej: Reunión de Coordinación"></div>
+      <div class="field"><label>👤 PRESIDE</label><input type="text" id="preside" placeholder="Nombre de quien preside"></div>
     </div>
 
-    <h3 class="no-print">Formulario de asistente</h3>
+    <h3 class="no-print">✍️ Formulario de asistente</h3>
     <div class="grid-form no-print">
-      <div class="field"><label>UNIDAD O DEPENDENCIA</label><input type="text" id="unidad"></div>
-      <div class="field"><label>NOMBRE-APELLIDO</label><input type="text" id="nombre"></div>
-      <div class="field"><label>GRADO Y/O CARGO</label><input type="text" id="cargo"></div>
-      <div class="field"><label>E-MAIL</label><input type="email" id="email"></div>
-      <div class="field"><label>TELÉFONO</label><input type="tel" id="telefono"></div>
+      <div class="field"><label>🏢 UNIDAD O DEPENDENCIA</label><input type="text" id="unidad" placeholder="Ej: C4I2"></div>
+      <div class="field"><label>👤 NOMBRE-APELLIDO</label><input type="text" id="nombre" placeholder="* Obligatorio"></div>
+      <div class="field"><label>⭐ GRADO Y/O CARGO</label><input type="text" id="cargo" placeholder="Ej: Capitán"></div>
+      <div class="field"><label>📧 E-MAIL</label><input type="email" id="email" placeholder="ejemplo@policia.gob.ec"></div>
+      <div class="field"><label>📱 TELÉFONO</label><input type="tel" id="telefono" placeholder="0999999999"></div>
     </div>
 
     <div class="no-print signature-wrap">
       <div class="field">
-        <label>FIRMA TÁCTIL</label>
+        <label>🖊️ FIRMA TÁCTIL (Dibuje aquí)</label>
         <canvas id="signaturePad" width="420" height="180"></canvas>
       </div>
       <div class="actions">
-        <button type="button" class="secondary" onclick="limpiarFirma()">Limpiar firma</button>
-        <button type="button" onclick="agregarAsistente()">Agregar asistente</button>
-        <button type="button" class="success" onclick="prepararImpresion()">Imprimir / PDF</button>
+        <button type="button" class="secondary" onclick="limpiarFirma()">🗑️ Limpiar firma</button>
+        <button type="button" onclick="agregarAsistente()">➕ Agregar asistente</button>
+        <button type="button" class="success" onclick="prepararImpresion()">🖨️ Imprimir / PDF</button>
       </div>
     </div>
 
     <div class="table-wrap">
-      <table>
+      <table id="tablaAsistentes">
         <thead>
           <tr>
             <th style="width:40px;">N°</th>
-            <th style="width:170px;">UNIDAD O DEPENDENCIA</th>
-            <th>NOMBRE-APELLIDO</th>
-            <th style="width:140px;">GRADO Y/O CARGO</th>
-            <th style="width:190px;">E-MAIL</th>
-            <th style="width:120px;">TELÉFONO</th>
-            <th style="width:120px;">FIRMA</th>
+            <th style="width:180px;">UNIDAD O DEPENDENCIA</th>
+            <th style="width:200px;">NOMBRE-APELLIDO</th>
+            <th style="width:150px;">GRADO Y/O CARGO</th>
+            <th style="width:200px;">E-MAIL</th>
+            <th style="width:130px;">TELÉFONO</th>
+            <th style="width:150px;">FIRMA</th>
           </tr>
         </thead>
         <tbody id="tabla"></tbody>
@@ -240,10 +279,22 @@
   </div>
 
   <script>
-    const fecha = document.getElementById('fecha');
-    const hoy = new Date();
-    fecha.value = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+    // --- Variables globales ---
+    let asistentes = [];
+    let editingIndex = null;
+    let currentSignatureData = null;
 
+    // --- Elementos DOM ---
+    const fechaInput = document.getElementById('fecha');
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    // --- Configuración inicial de fecha ---
+    const hoy = new Date();
+    fechaInput.value = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+
+    // --- Formateo de fecha en español ---
     function formatFechaES(date) {
       const f = new Intl.DateTimeFormat('es-EC', {
         weekday: 'long',
@@ -254,10 +305,7 @@
       return f.charAt(0).toUpperCase() + f.slice(1);
     }
 
-    const canvas = document.getElementById('signaturePad');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
-
+    // --- Funciones de la firma táctil ---
     function resizeCanvasForDPR() {
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
@@ -267,12 +315,20 @@
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
       ctx.strokeStyle = '#000';
+      if (currentSignatureData) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0);
+        img.src = currentSignatureData;
+      }
     }
 
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
       const t = e.touches ? e.touches[0] : e;
-      return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+      return { 
+        x: (t.clientX - rect.left) * (canvas.width / rect.width),
+        y: (t.clientY - rect.top) * (canvas.height / rect.height)
+      };
     }
 
     function startDraw(e) {
@@ -291,10 +347,17 @@
       e.preventDefault();
     }
 
-    function stopDraw() { drawing = false; }
+    function stopDraw() { 
+      drawing = false;
+      currentSignatureData = canvas.toDataURL('image/png');
+    }
 
     function limpiarFirma() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      currentSignatureData = null;
+      if (editingIndex !== null) {
+        asistentes[editingIndex].firma = '';
+      }
     }
 
     canvas.addEventListener('mousedown', startDraw);
@@ -304,60 +367,206 @@
     canvas.addEventListener('touchstart', startDraw, { passive:false });
     canvas.addEventListener('touchmove', draw, { passive:false });
     canvas.addEventListener('touchend', stopDraw);
-
     window.addEventListener('resize', resizeCanvasForDPR);
     resizeCanvasForDPR();
 
-    const asistentes = [];
+    // --- Validaciones ---
+    function validarEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return email === '' || re.test(email);
+    }
 
+    function validarTelefono(tel) {
+      const re = /^[0-9]{9,10}$/;
+      return tel === '' || re.test(tel);
+    }
+
+    // --- Guardar en localStorage ---
+    function guardarEnLocalStorage() {
+      const datos = {
+        asistentes: asistentes,
+        fecha: fechaInput.value,
+        tema: document.getElementById('tema').value,
+        preside: document.getElementById('preside').value
+      };
+      localStorage.setItem('asistenciaPolicia', JSON.stringify(datos));
+    }
+
+    // --- Cargar desde localStorage ---
+    function cargarDesdeLocalStorage() {
+      const guardado = localStorage.getItem('asistenciaPolicia');
+      if (guardado) {
+        const datos = JSON.parse(guardado);
+        asistentes = datos.asistentes || [];
+        fechaInput.value = datos.fecha || hoy.toISOString().split('T')[0];
+        document.getElementById('tema').value = datos.tema || '';
+        document.getElementById('preside').value = datos.preside || '';
+        renderTabla();
+      }
+    }
+
+    // --- Agregar o actualizar asistente ---
     function agregarAsistente() {
       const unidad = document.getElementById('unidad').value.trim();
       const nombre = document.getElementById('nombre').value.trim();
       const cargo = document.getElementById('cargo').value.trim();
       const email = document.getElementById('email').value.trim();
       const telefono = document.getElementById('telefono').value.trim();
-      const firma = canvas.toDataURL('image/png');
+      
+      let firma = currentSignatureData || '';
+      
+      if (editingIndex !== null && !firma && asistentes[editingIndex]) {
+        firma = asistentes[editingIndex].firma;
+      }
 
       if (!nombre) {
-        alert('Ingresa al menos el nombre del asistente.');
+        alert('❌ El campo NOMBRE-APELLIDO es obligatorio.');
         return;
       }
 
-      asistentes.push({ unidad, nombre, cargo, email, telefono, firma });
+      if (!validarEmail(email)) {
+        alert('❌ El correo electrónico no es válido.');
+        return;
+      }
+
+      if (!validarTelefono(telefono)) {
+        alert('❌ El teléfono debe tener 9 o 10 dígitos numéricos.');
+        return;
+      }
+
+      const asistente = { unidad, nombre, cargo, email, telefono, firma };
+
+      if (editingIndex !== null) {
+        asistentes[editingIndex] = asistente;
+        editingIndex = null;
+        alert('✅ Asistente actualizado correctamente');
+      } else {
+        asistentes.push(asistente);
+        alert('✅ Asistente agregado correctamente');
+      }
+
       renderTabla();
       limpiarCampos();
       limpiarFirma();
+      guardarEnLocalStorage();
     }
 
+    // --- Editar asistente ---
+    function editarAsistente(index) {
+      const a = asistentes[index];
+      document.getElementById('unidad').value = a.unidad;
+      document.getElementById('nombre').value = a.nombre;
+      document.getElementById('cargo').value = a.cargo;
+      document.getElementById('email').value = a.email;
+      document.getElementById('telefono').value = a.telefono;
+      
+      if (a.firma) {
+        currentSignatureData = a.firma;
+        const img = new Image();
+        img.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = a.firma;
+      } else {
+        limpiarFirma();
+      }
+      
+      editingIndex = index;
+      document.getElementById('nombre').focus();
+      guardarEnLocalStorage();
+    }
+
+    // --- Eliminar asistente ---
+    function eliminarAsistente(index) {
+      if (confirm('¿Está seguro de eliminar a ' + asistentes[index].nombre + '?')) {
+        asistentes.splice(index, 1);
+        renderTabla();
+        guardarEnLocalStorage();
+        if (editingIndex === index) {
+          limpiarCampos();
+          limpiarFirma();
+          editingIndex = null;
+        }
+        alert('🗑️ Asistente eliminado');
+      }
+    }
+
+    // --- Renderizar tabla sin columna de acciones ---
     function renderTabla() {
       const tbody = document.getElementById('tabla');
+      if (asistentes.length === 0) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">📋 No hay asistentes registrados. Complete el formulario y presione "Agregar asistente"</td></tr>';
+        return;
+      }
+      
       tbody.innerHTML = '';
       asistentes.forEach((a, i) => {
+        const emailValid = validarEmail(a.email);
+        const telefonoValid = validarTelefono(a.telefono);
         tbody.innerHTML += `
           <tr>
             <td>${i + 1}</td>
-            <td>${a.unidad}</td>
-            <td>${a.nombre}</td>
-            <td>${a.cargo}</td>
-            <td>${a.email}</td>
-            <td>${a.telefono}</td>
-            <td>${a.firma ? '<img class="sig" src="'+a.firma+'">' : ''}</td>
+            <td>${escapeHtml(a.unidad)}</td>
+            <td><strong>${escapeHtml(a.nombre)}</strong></td>
+            <td>${escapeHtml(a.cargo)}</td>
+            <td>${escapeHtml(a.email)} ${!emailValid && a.email ? '<span class="badge badge-danger">inválido</span>' : ''}</td>
+            <td>${escapeHtml(a.telefono)} ${!telefonoValid && a.telefono ? '<span class="badge badge-danger">inválido</span>' : ''}</td>
+            <td>${a.firma ? '<img class="sig" src="'+a.firma+'" alt="firma">' : '<span class="badge badge-danger">Sin firma</span>'}</td>
           </tr>
         `;
       });
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
     function limpiarCampos() {
-      ['unidad','nombre','cargo','email','telefono'].forEach(id => document.getElementById(id).value = '');
+      ['unidad','nombre','cargo','email','telefono'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      editingIndex = null;
       document.getElementById('nombre').focus();
     }
 
     function prepararImpresion() {
-      const d = new Date(fecha.value + 'T00:00:00');
-      document.getElementById('pFecha').textContent = formatFechaES(d);
-      document.getElementById('pTema').textContent = document.getElementById('tema').value;
-      document.getElementById('pPreside').textContent = document.getElementById('preside').value;
+      const fechaSeleccionada = new Date(fechaInput.value + 'T00:00:00');
+      document.getElementById('pFecha').textContent = formatFechaES(fechaSeleccionada);
+      document.getElementById('pTema').textContent = document.getElementById('tema').value || 'No especificado';
+      document.getElementById('pPreside').textContent = document.getElementById('preside').value || 'No especificado';
+      document.getElementById('pTotal').textContent = asistentes.length;
+      
+      let hayErrores = false;
+      asistentes.forEach(a => {
+        if (!validarEmail(a.email) && a.email) hayErrores = true;
+        if (!validarTelefono(a.telefono) && a.telefono) hayErrores = true;
+      });
+      
+      if (hayErrores) {
+        if (!confirm('⚠️ Hay correos o teléfonos con formato inválido. ¿Desea imprimir de todas formas?')) {
+          return;
+        }
+      }
+      
       window.print();
+    }
+
+    window.addEventListener('beforeunload', () => {
+      guardarEnLocalStorage();
+    });
+
+    cargarDesdeLocalStorage();
+    renderTabla();
+    
+    if (editingIndex === null) {
+      limpiarFirma();
     }
   </script>
 </body>
