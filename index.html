@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Sistema de Asistencia - Policía Nacional del Ecuador</title>
+  
   <style>
     * { box-sizing: border-box; }
     body {
@@ -75,19 +75,66 @@
       padding: 0;
     }
 
+    /* --- NUEVA DISTRIBUCIÓN DE FECHA, TEMA, PRESIDE Y TOTAL --- */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 25px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+    }
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .info-item label {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #1f4e79;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .info-item input {
+      padding: 10px 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      transition: border-color 0.3s;
+      background: #fff;
+    }
+    .info-item input:focus {
+      outline: none;
+      border-color: #1f4e79;
+    }
+    .info-item .total-display {
+      padding: 10px 12px;
+      border: 2px solid #1f4e79;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #e8f0f8;
+      color: #1f4e79;
+      text-align: center;
+    }
+
     .print-info { display: none; margin: 15px 0 20px; font-size: 14px; }
     .print-info .row {
       display: flex;
-      gap: 14px;
+      gap: 20px;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: space-between;
       border: 1px solid #222;
-      padding: 10px;
+      padding: 12px 15px;
       background: #f9f9f9;
     }
     .print-info strong { font-weight: 700; }
 
-    .grid-top, .grid-form {
+    .grid-form {
       display: grid;
       grid-template-columns: 1fr;
       gap: 12px;
@@ -245,7 +292,6 @@
       }
       .header .main { font-size: 32px; }
       .header .sub1, .header .sub2 { font-size: 16px; }
-      .grid-top { grid-template-columns: repeat(3, 1fr); }
       .grid-form { grid-template-columns: 1.2fr 2fr 1.2fr 1.5fr 1fr; }
       .actions {
         grid-template-columns: repeat(3, 1fr);
@@ -256,6 +302,20 @@
       img.sig {
         max-width: 160px;
         max-height: 70px;
+      }
+      .info-grid {
+        gap: 20px;
+        padding: 20px;
+      }
+      .info-item input, .info-item .total-display {
+        font-size: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
       }
     }
 
@@ -313,7 +373,7 @@
       }
       
       .print-info .row {
-        justify-content: center;
+        justify-content: space-between;
       }
       
       html, body {
@@ -361,10 +421,24 @@
       </div>
     </div>
 
-    <div class="grid-top no-print">
-      <div class="field"><label>📅 FECHA</label><input type="date" id="fecha" autocomplete="off"></div>
-      <div class="field"><label>📝 TEMA</label><input type="text" id="tema" placeholder="Ej: Reunión de Coordinación" autocomplete="off"></div>
-      <div class="field"><label>👤 PRESIDE</label><input type="text" id="preside" placeholder="Nombre de quien preside" autocomplete="off"></div>
+    <!-- NUEVA DISTRIBUCIÓN DE FECHA, TEMA, PRESIDE Y TOTAL ASISTENTES -->
+    <div class="info-grid no-print">
+      <div class="info-item">
+        <label>📅 FECHA</label>
+        <input type="date" id="fecha" autocomplete="off">
+      </div>
+      <div class="info-item">
+        <label>📝 TEMA</label>
+        <input type="text" id="tema" placeholder="Ingrese el tema de la reunión" autocomplete="off">
+      </div>
+      <div class="info-item">
+        <label>👤 PRESIDE</label>
+        <input type="text" id="preside" placeholder="Nombre de quien preside" autocomplete="off">
+      </div>
+      <div class="info-item">
+        <label>📊 TOTAL ASISTENTES</label>
+        <div class="total-display" id="totalAsistentes">0</div>
+      </div>
     </div>
 
     <h3 class="no-print">✍️ Formulario de asistente</h3>
@@ -372,7 +446,13 @@
       <div class="field"><label>🏢 UNIDAD</label><input type="text" id="unidad" placeholder="Ej: C4I2" autocomplete="off"></div>
       <div class="field"><label>👤 APELLIDOS Y NOMBRES</label><input type="text" id="nombre" placeholder="* Obligatorio" autocomplete="off"></div>
       <div class="field"><label>⭐ GRADO Y/O CARGO</label><input type="text" id="cargo" placeholder="Ej: Capitán" autocomplete="off"></div>
-      <div class="field"><label>📧 E-MAIL</label><input type="email" id="email" placeholder="ejemplo@policia.gob.ec" autocomplete="off"></div>
+      <div class="field"><label>📧 E-MAIL</label>
+        <input type="text" id="email" placeholder="ejemplo@policia.gob.ec" 
+               autocomplete="off"
+               autocomplete="new-password"
+               readonly
+               onfocus="this.removeAttribute('readonly'); this.type='email'">
+      </div>
       <div class="field"><label>📱 TELÉFONO</label><input type="tel" id="telefono" placeholder="0999999999" autocomplete="off"></div>
     </div>
 
@@ -416,13 +496,18 @@
 
     // --- Elementos DOM ---
     const fechaInput = document.getElementById('fecha');
+    const totalDisplay = document.getElementById('totalAsistentes');
     const canvas = document.getElementById('signaturePad');
     const ctx = canvas.getContext('2d');
     let drawing = false;
 
     // --- Configuración inicial de fecha (vacío por defecto) ---
-    // NO se establece ninguna fecha por defecto
     fechaInput.value = '';
+
+    // --- Actualizar contador de asistentes ---
+    function actualizarTotalAsistentes() {
+      totalDisplay.textContent = asistentes.length;
+    }
 
     // --- Formateo de fecha en español ---
     function formatFechaES(date) {
@@ -526,16 +611,27 @@
 
     // --- Limpiar todos los campos del formulario ---
     function limpiarTodosLosCampos() {
-      ['unidad', 'nombre', 'cargo', 'email', 'telefono'].forEach(id => {
+      ['unidad', 'nombre', 'cargo', 'telefono'].forEach(id => {
         const campo = document.getElementById(id);
         if (campo) campo.value = '';
       });
-      // Limpiar fecha, tema y preside
+      // Limpiar campo email
+      const emailField = document.getElementById('email');
+      if (emailField) {
+        emailField.value = '';
+        emailField.type = 'text';
+        emailField.setAttribute('readonly', 'readonly');
+        setTimeout(() => {
+          emailField.removeAttribute('readonly');
+          emailField.type = 'email';
+        }, 100);
+      }
       if (fechaInput) fechaInput.value = '';
       const temaInput = document.getElementById('tema');
       const presideInput = document.getElementById('preside');
       if (temaInput) temaInput.value = '';
       if (presideInput) presideInput.value = '';
+      actualizarTotalAsistentes();
     }
 
     // --- Renderizar tabla ---
@@ -543,6 +639,7 @@
       const tbody = document.getElementById('tabla');
       if (asistentes.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="7">📋 No hay asistentes registrados. Complete el formulario y presione "Agregar asistente"</td></tr>';
+        actualizarTotalAsistentes();
         return;
       }
       
@@ -562,6 +659,7 @@
           </tr>
         `;
       });
+      actualizarTotalAsistentes();
     }
 
     function escapeHtml(str) {
@@ -575,10 +673,14 @@
     }
 
     function limpiarCamposFormulario() {
-      ['unidad', 'nombre', 'cargo', 'email', 'telefono'].forEach(id => {
+      ['unidad', 'nombre', 'cargo', 'telefono'].forEach(id => {
         const campo = document.getElementById(id);
         if (campo) campo.value = '';
       });
+      const emailField = document.getElementById('email');
+      if (emailField) {
+        emailField.value = '';
+      }
       document.getElementById('nombre').focus();
     }
 
